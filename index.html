@@ -89,7 +89,7 @@
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5">
             <div class="flex justify-between items-center mb-6 border-b border-gray-100 dark:border-gray-700 pb-3">
                 <div class="flex items-center gap-3">
-                    <button onclick="openStepModal()" class="w-10 h-10 bg-brown-600 hover:bg-brown-700 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md transition-transform hover:scale-105" title="إضافة تمرين">+</button>
+                    <button id="add-step-btn" onclick="openStepModal()" class="w-10 h-10 bg-brown-600 hover:bg-brown-700 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md transition-transform hover:scale-105" title="إضافة تمرين">+</button>
                 </div>
                 <div class="flex items-center gap-4">
                     <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100" id="current-lesson-title">الدرس</h2>
@@ -250,28 +250,21 @@
                 </button>
             </div>
             
-            <div class="absolute left-0 text-xs font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full">v4.0 (Auth Fixed)</div>
+            <div class="absolute left-0 text-xs font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full">v4.2</div>
         </div>
     </footer>
 
     <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
         // --- State Management ---
         let db = null;
         let globalTimer = null;
         
         let lessons = [];
         let currentLessonId = null;
-
-        const defaultV3Lesson = {
-            id: Date.now(),
-            name: "الدرس الأول",
-            steps: [
-                { id: 1, name: "احماء لليد ودوزان العود", desc: "تأكد من سلامة الجلسة ومسكة الريشة", duration: 0, isRunning: false, completed: false },
-                { id: 2, name: "تمرين الريشة الابتدائي", desc: "صد رد ٨ مرات على حميع الاوتار نزول ثم صعود", duration: 0, isRunning: false, completed: false },
-                { id: 3, name: "تمرين التوافق الحركي بين اليد اليمنى واليسرى", desc: "النزول: صد مطلق - رد ١ - صد ٢ - رد ٣ - صد ٤ - رد ٣ - صد ٢ رد ١ ثم الوتر التالي صد مطلق ، ...\nالصعود يكون بدون المطلق فقط رد ١ - صد ٢ - رد ٣ - صد ٤", duration: 0, isRunning: false, completed: false },
-                { id: 4, name: "تمرين الاصابع المتقدم", desc: "اصابع اليد اليسرى ١ - ٣ - ٢ - ٤\nصد رد على جميع الاوتار نزول ثم صعود", duration: 0, isRunning: false, completed: false }
-            ]
-        };
 
         // --- SVGs ---
         const svgs = {
@@ -321,16 +314,12 @@
         
         let userId = null;
 
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
         async function initFirebase() {
-            const app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            const auth = getAuth(app);
-
             try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                const auth = getAuth(app);
+
                 // VERY IMPORTANT: Check for workspace custom token to avoid permission denied errors
                 if (typeof __initial_auth_token !== 'undefined') {
                     await signInWithCustomToken(auth, __initial_auth_token);
@@ -343,10 +332,7 @@
                 
                 await loadData();
             } catch (error) {
-                console.error("Authentication failed:", error);
-                // Fallback to local defaults if auth fails
-                lessons = [ JSON.parse(JSON.stringify(defaultV3Lesson)) ];
-                currentLessonId = lessons[0].id;
+                console.error("Authentication or init failed:", error);
                 renderApp();
             }
         }
@@ -359,21 +345,19 @@
             
             try {
                 const snap = await getDoc(docRef);
-                if (snap.exists() && snap.data().lessons && snap.data().lessons.length > 0) {
+                if (snap.exists() && snap.data().lessons) {
                     lessons = snap.data().lessons.map(l => ({
                         ...l, 
-                        steps: l.steps.map(s => ({...s, isRunning: false}))
+                        steps: l.steps ? l.steps.map(s => ({...s, isRunning: false})) : []
                     }));
-                    currentLessonId = lessons[0].id;
-                } else {
-                    // Initialize with defaults if empty
-                    lessons = [ JSON.parse(JSON.stringify(defaultV3Lesson)) ];
-                    currentLessonId = lessons[0].id;
-                    await saveData(); // Await saving of defaults
+                    if (lessons.length > 0) {
+                        currentLessonId = lessons[0].id;
+                    }
                 }
                 renderApp();
             } catch (error) {
                 console.error("Error loading data:", error);
+                renderApp();
             }
         }
 
@@ -384,7 +368,9 @@
             try {
                 // Remove running state before saving to prevent stale timers on reload
                 const dataToSave = JSON.parse(JSON.stringify(lessons));
-                dataToSave.forEach(l => l.steps.forEach(s => s.isRunning = false));
+                dataToSave.forEach(l => {
+                    if (l.steps) l.steps.forEach(s => s.isRunning = false);
+                });
                 await setDoc(docRef, { lessons: dataToSave });
             } catch (error) {
                 console.error("Error saving data:", error);
@@ -403,7 +389,14 @@
             renderSteps();
             
             const current = lessons.find(l => l.id === currentLessonId);
-            document.getElementById('current-lesson-title').textContent = current ? current.name : "الدرس";
+            document.getElementById('current-lesson-title').textContent = current ? current.name : "لا يوجد دروس";
+            
+            const addStepBtn = document.getElementById('add-step-btn');
+            if (!current) {
+                addStepBtn.classList.add('hidden');
+            } else {
+                addStepBtn.classList.remove('hidden');
+            }
         }
 
         function renderLessonsNav() {
@@ -432,7 +425,22 @@
             list.innerHTML = '';
             
             const currentLesson = lessons.find(l => l.id === currentLessonId);
-            if (!currentLesson || !currentLesson.steps || currentLesson.steps.length === 0) {
+            
+            if (!currentLesson) {
+                list.innerHTML = `
+                    <div class="text-center py-10">
+                        <div class="w-16 h-16 bg-brown-100 dark:bg-brown-900/50 text-brown-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">لا توجد دروس حالياً</h3>
+                        <p class="text-gray-500 dark:text-gray-400 mb-6">قم بإنشاء درس جديد للبدء في إضافة التمارين</p>
+                        <button onclick="openLessonModal(false)" class="bg-brown-600 hover:bg-brown-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transition">إنشاء درس جديد</button>
+                    </div>
+                `;
+                return;
+            }
+
+            if (!currentLesson.steps || currentLesson.steps.length === 0) {
                 list.innerHTML = '<div class="text-center text-gray-500 py-8">لا توجد تمارين في هذا الدرس. اضغط على (+) لإضافة تمرين جديد.</div>';
                 return;
             }
@@ -549,15 +557,9 @@
         }
 
         function deleteCurrentLesson() {
-            if (lessons.length <= 1) {
-                showConfirm("تنبيه", "لا يمكنك حذف الدرس الوحيد المتبقي.", null);
-                document.getElementById('confirm-yes-btn').classList.add('hidden');
-                return;
-            }
-            
             showConfirm("حذف الدرس", "هل أنت متأكد من حذف هذا الدرس وجميع تمارينه؟", () => {
                 lessons = lessons.filter(l => l.id !== currentLessonId);
-                currentLessonId = lessons[0].id;
+                currentLessonId = lessons.length > 0 ? lessons[0].id : null;
                 saveData();
                 renderApp();
             });

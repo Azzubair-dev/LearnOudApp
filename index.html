@@ -250,13 +250,13 @@
                 </button>
             </div>
             
-            <div class="absolute left-0 text-xs font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full">v4.2</div>
+            <div class="absolute left-0 text-xs font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full">4.3</div>
         </div>
     </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, setPersistence, browserLocalPersistence, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- State Management ---
@@ -320,11 +320,34 @@
                 db = getFirestore(app);
                 const auth = getAuth(app);
 
-                // VERY IMPORTANT: Check for workspace custom token to avoid permission denied errors
-                if (typeof __initial_auth_token !== 'undefined') {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
+                // Explicitly force local storage persistence to survive refreshes
+                try {
+                    await setPersistence(auth, browserLocalPersistence);
+                } catch (err) {
+                    console.warn("Could not set strict persistence:", err);
+                }
+
+                // Bulletproof wait: Pause execution until Firebase checks browser storage for existing session
+                await new Promise((resolve) => {
+                    const unsubscribe = onAuthStateChanged(auth, (user) => {
+                        unsubscribe(); // Stop listening once we get the initial state
+                        resolve(user);
+                    });
+                });
+
+                // Only perform sign-in if an existing session wasn't found
+                if (!auth.currentUser) {
+                    const customToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                    if (customToken) {
+                        try {
+                            await signInWithCustomToken(auth, customToken);
+                        } catch (tokenErr) {
+                            console.warn("Custom token failed, falling back to anonymous", tokenErr);
+                            await signInAnonymously(auth);
+                        }
+                    } else {
+                        await signInAnonymously(auth);
+                    }
                 }
                 
                 if (!auth.currentUser) throw new Error("No user authenticated.");
@@ -357,6 +380,7 @@
                 renderApp();
             } catch (error) {
                 console.error("Error loading data:", error);
+                showConfirm("خطأ في التحميل", "تعذر استرجاع البيانات المحفوظة. تأكد من إعدادات قاعدة البيانات.", null);
                 renderApp();
             }
         }
@@ -374,6 +398,7 @@
                 await setDoc(docRef, { lessons: dataToSave });
             } catch (error) {
                 console.error("Error saving data:", error);
+                showConfirm("خطأ في الحفظ", "تعذر حفظ التغييرات في السحابة. قد تكون هناك مشكلة في الصلاحيات.", null);
             }
         }
 

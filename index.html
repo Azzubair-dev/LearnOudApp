@@ -250,7 +250,7 @@
                 </button>
             </div>
             
-            <div class="absolute left-0 text-xs font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full">v3.7</div>
+            <div class="absolute left-0 text-xs font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full">v3.9</div>
         </div>
     </footer>
 
@@ -286,49 +286,79 @@
             reset: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>`
         };
 
-        // --- IndexedDB Setup ---
-        function initDB() {
-            const request = indexedDB.open('OudTrackerDB_V3', 1);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'oud-tracker';
+        let userId = null;
 
-            request.onupgradeneeded = (event) => {
-                db = event.target.result;
-                if (!db.objectStoreNames.contains('data')) {
-                    db.createObjectStore('data');
-                }
+        async function initFirebase() {
+            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
+            const { getAuth, signInAnonymously } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+            const { getFirestore } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyBizVS-hLBjRE_6lVjGASLW7oPgn-izADI",
+                authDomain: "learnoud-75c4b.firebaseapp.com",
+                projectId: "learnoud-75c4b",
+                storageBucket: "learnoud-75c4b.firebasestorage.app",
+                messagingSenderId: "75488374442",
+                appId: "1:75488374442:web:39ea03fd8c01e44f882ad3"
             };
 
-            request.onsuccess = (event) => {
-                db = event.target.result;
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            const auth = getAuth(app);
+
+            try {
+                // Force standard anonymous auth, ignoring any injected environment tokens
+                await signInAnonymously(auth);
+                userId = auth.currentUser?.uid || crypto.randomUUID();
                 loadData();
-            };
+            } catch (error) {
+                console.error("Authentication failed:", error);
+                // Fallback to local defaults if auth fails
+                lessons = [ JSON.parse(JSON.stringify(defaultV3Lesson)) ];
+                currentLessonId = lessons[0].id;
+                renderApp();
+            }
         }
 
-        function loadData() {
-            const tx = db.transaction('data', 'readonly');
-            const req = tx.objectStore('data').get('lessonsV3');
+        async function loadData() {
+            if (!db || !userId) return;
+            const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'appData', 'lessonsV3');
             
-            req.onsuccess = () => {
-                let data = req.result;
-                if (data && data.length > 0) {
-                    lessons = data.map(l => ({
+            try {
+                const snap = await getDoc(docRef);
+                if (snap.exists() && snap.data().lessons && snap.data().lessons.length > 0) {
+                    lessons = snap.data().lessons.map(l => ({
                         ...l, 
-                        steps: l.steps.map(s => ({...s, isRunning: false})) // reset running state
+                        steps: l.steps.map(s => ({...s, isRunning: false}))
                     }));
                     currentLessonId = lessons[0].id;
                 } else {
-                    // Initialize with Lesson 1 defaults
+                    // Initialize with defaults if empty
                     lessons = [ JSON.parse(JSON.stringify(defaultV3Lesson)) ];
                     currentLessonId = lessons[0].id;
                     saveData();
                 }
                 renderApp();
-            };
+            } catch (error) {
+                console.error("Error loading data:", error);
+            }
         }
 
-        function saveData() {
-            if (!db) return;
-            const tx = db.transaction('data', 'readwrite');
-            tx.objectStore('data').put(lessons, 'lessonsV3');
+        async function saveData() {
+            if (!db || !userId) return;
+            const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'appData', 'lessonsV3');
+            
+            try {
+                // Remove running state before saving to prevent stale timers on reload
+                const dataToSave = JSON.parse(JSON.stringify(lessons));
+                dataToSave.forEach(l => l.steps.forEach(s => s.isRunning = false));
+                await setDoc(docRef, { lessons: dataToSave });
+            } catch (error) {
+                console.error("Error saving data:", error);
+            }
         }
 
         // --- Core Rendering ---
@@ -906,7 +936,7 @@
         document.addEventListener('visibilitychange', manageWakeLock);
 
         // Boot
-        initDB();
+        initFirebase();
 
     </script>
 </body>

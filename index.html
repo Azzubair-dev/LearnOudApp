@@ -250,7 +250,7 @@
                 </button>
             </div>
             
-            <div class="absolute left-0 text-xs font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full">4.3</div>
+            <div class="absolute left-0 text-xs font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full">4.4</div>
         </div>
     </footer>
 
@@ -356,6 +356,7 @@
                 await loadData();
             } catch (error) {
                 console.error("Authentication or init failed:", error);
+                showConfirm("فشل المصادقة", "لم يتمكن التطبيق من الاتصال. يرجى تفعيل (Anonymous Auth) في إعدادات Firebase الخاصة بك.", null);
                 renderApp();
             }
         }
@@ -380,13 +381,16 @@
                 renderApp();
             } catch (error) {
                 console.error("Error loading data:", error);
-                showConfirm("خطأ في التحميل", "تعذر استرجاع البيانات المحفوظة. تأكد من إعدادات قاعدة البيانات.", null);
+                showConfirm("خطأ في التحميل", "تعذر قراءة البيانات. يرجى التأكد من أن قواعد Firestore تسمح بالقراءة.", null);
                 renderApp();
             }
         }
 
         async function saveData() {
-            if (!db || !userId) return;
+            if (!db || !userId) {
+                showConfirm("غير متصل", "تعذر الحفظ لأن التطبيق غير متصل بقاعدة البيانات بشكل صحيح.", null);
+                return;
+            }
             const docRef = doc(db, 'artifacts', appId, 'users', userId, 'appData', 'lessonsV3');
             
             try {
@@ -398,7 +402,7 @@
                 await setDoc(docRef, { lessons: dataToSave });
             } catch (error) {
                 console.error("Error saving data:", error);
-                showConfirm("خطأ في الحفظ", "تعذر حفظ التغييرات في السحابة. قد تكون هناك مشكلة في الصلاحيات.", null);
+                showConfirm("صلاحيات مفقودة", "تم رفض الحفظ من قبل Firebase. يرجى تحديث قواعد Firestore (Security Rules) لتسمح بالكتابة.", null);
             }
         }
 

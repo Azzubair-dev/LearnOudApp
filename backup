@@ -1,1 +1,968 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>تعلم العود</title>
 
+    <!-- ANTI-CACHE -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <!-- iOS STANDALONE APP -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="تعلم العود">
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brown: {
+                            50: '#fdf8f6', 100: '#f2e8e5', 200: '#eaddd7', 300: '#e0cec7',
+                            400: '#d2bab0', 500: '#a18072', 600: '#8a6859', 700: '#694c3f',
+                            800: '#4a352a', 900: '#271c15',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { transition: background-color 0.3s ease, color 0.3s ease; }
+        /* Hide scrollbar for lessons nav but keep functionality */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Main scrollbar styling */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d2bab0; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #4a352a; }
+
+        /* Hide number input spinners */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    </style>
+</head>
+<body class="bg-brown-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100 min-h-screen flex flex-col font-sans pb-[calc(8rem+env(safe-area-inset-bottom))]">
+
+    <header class="bg-white dark:bg-gray-800 shadow-sm p-4 flex justify-between items-center border-b border-gray-200 dark:border-gray-700 sticky top-0 z-20">
+        <!-- Right side (Menu & Theme) -->
+        <div class="flex items-center gap-2">
+            <button onclick="openTuningModal()" class="px-3 py-1.5 rounded-lg bg-brown-100 dark:bg-gray-700 text-brown-800 dark:text-brown-300 font-bold hover:bg-brown-200 dark:hover:bg-gray-600 transition" title="الدوزان">
+                الدوزان
+            </button>
+            <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition" title="تغيير المظهر">
+                <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path></svg>
+            </button>
+        </div>
+        
+        <!-- Center (Title) -->
+        <h1 class="text-xl font-bold tracking-tight text-center flex-grow text-brown-700 dark:text-brown-400">تعلم العود</h1>
+        
+        <!-- Left side (Refresh) -->
+        <button onclick="window.location.reload(true)" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition" title="تحديث الصفحة">
+            <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        </button>
+    </header>
+
+    <nav class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 py-3 px-4">
+        <div class="max-w-2xl mx-auto flex items-center gap-2 overflow-x-auto hide-scrollbar" id="lessons-nav">
+            <!-- Lesson pills injected here -->
+        </div>
+    </nav>
+
+    <main class="flex-grow w-full max-w-2xl mx-auto p-4 md:p-6 mt-2">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5">
+            <div class="flex justify-between items-center mb-6 border-b border-gray-100 dark:border-gray-700 pb-3">
+                <div class="flex items-center gap-3">
+                    <button onclick="openStepModal()" class="w-10 h-10 bg-brown-600 hover:bg-brown-700 text-white rounded-full flex items-center justify-center font-bold text-2xl shadow-md transition-transform hover:scale-105" title="إضافة تمرين">+</button>
+                </div>
+                <div class="flex items-center gap-4">
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100" id="current-lesson-title">الدرس</h2>
+                    <button onclick="openLessonModal(true)" class="text-gray-400 hover:text-brown-600 transition" title="تعديل الدرس">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <ul id="steps-list" class="space-y-4">
+                <!-- Steps injected here -->
+            </ul>
+        </div>
+    </main>
+
+    <!-- 1. Add/Edit Step Modal -->
+    <div id="step-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-2xl w-full max-w-sm mx-4 transform transition-transform">
+            <h3 id="step-modal-title" class="text-xl font-bold mb-5 text-gray-900 dark:text-white border-b pb-2">إضافة تمرين</h3>
+            <input type="text" id="step-name-input" placeholder="اسم التمرين..." class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brown-500 mb-3 text-gray-900 dark:text-white">
+            <textarea id="step-desc-input" placeholder="وصف قصير أو تعليمات (اختياري)..." class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brown-500 mb-6 h-28 resize-none text-gray-900 dark:text-white"></textarea>
+            <div class="flex justify-between items-center">
+                <button id="step-delete-btn" onclick="handleStepDelete()" class="hidden text-red-500 hover:text-red-700 font-bold px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/30 transition">حذف</button>
+                <div class="flex space-x-3 space-x-reverse mr-auto">
+                    <button onclick="closeModals()" class="px-5 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg font-medium transition">إلغاء</button>
+                    <button onclick="saveStep()" class="px-5 py-2 bg-brown-600 hover:bg-brown-700 text-white rounded-lg font-bold shadow-md transition">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Create/Edit Lesson Modal -->
+    <div id="lesson-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-2xl w-full max-w-sm mx-4 transform transition-transform">
+            <h3 id="lesson-modal-title" class="text-xl font-bold mb-5 text-gray-900 dark:text-white border-b pb-2">إنشاء درس جديد</h3>
+            <input type="text" id="lesson-name-input" placeholder="اسم الدرس..." class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brown-500 mb-6 text-gray-900 dark:text-white">
+            <div class="flex justify-between items-center w-full">
+                <button id="lesson-delete-btn" onclick="deleteCurrentLesson()" class="hidden text-red-500 hover:text-red-700 font-bold px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/30 transition">حذف الدرس</button>
+                <div class="flex space-x-3 space-x-reverse mr-auto">
+                    <button onclick="closeModals()" class="px-5 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg font-medium transition">إلغاء</button>
+                    <button onclick="saveLesson()" class="px-5 py-2 bg-brown-600 hover:bg-brown-700 text-white rounded-lg font-bold shadow-md transition">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Copy Step Modal -->
+    <div id="copy-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-2xl w-full max-w-sm mx-4 transform transition-transform">
+            <h3 class="text-xl font-bold mb-5 text-gray-900 dark:text-white border-b pb-2">نسخ التمرين</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">اختر الدرس الذي تريد نسخ التمرين إليه:</p>
+            <select id="copy-target-lesson" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-brown-500 mb-6 text-gray-900 dark:text-white"></select>
+            <div class="flex space-x-3 space-x-reverse justify-end">
+                <button onclick="closeModals()" class="px-5 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg font-medium transition">إلغاء</button>
+                <button onclick="confirmCopyStep()" class="px-5 py-2 bg-brown-600 hover:bg-brown-700 text-white rounded-lg font-bold shadow-md transition">نسخ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Custom Confirm Modal -->
+    <div id="confirm-modal" class="hidden fixed inset-0 bg-black/60 z-[60] flex items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-2xl w-full max-w-sm mx-4 text-center">
+            <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/50 text-red-500 mx-auto flex items-center justify-center mb-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 id="confirm-title" class="text-xl font-bold mb-2 text-gray-900 dark:text-white">تأكيد</h3>
+            <p id="confirm-msg" class="text-gray-600 dark:text-gray-300 mb-6">هل أنت متأكد؟</p>
+            <div class="flex space-x-3 space-x-reverse justify-center">
+                <button onclick="closeModals()" class="px-5 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg font-medium transition">إلغاء</button>
+                <button id="confirm-yes-btn" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold shadow-md transition">تأكيد</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Tuning Modal -->
+    <div id="tuning-modal" class="hidden fixed inset-0 bg-black/60 z-[70] flex items-center justify-center backdrop-blur-sm transition-opacity">
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-2xl w-full max-w-sm mx-4 transform transition-transform">
+            <div class="flex justify-between items-center mb-5 border-b border-gray-200 dark:border-gray-700 pb-2">
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">الدوزان</h3>
+                <button onclick="closeModals()" class="p-1 text-gray-500 hover:text-gray-800 dark:hover:text-white transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Tuning Guide -->
+            <div class="bg-gray-50 dark:bg-gray-700/30 rounded-xl p-4 mb-5 border border-gray-100 dark:border-gray-600">
+                <p class="text-xs text-center text-gray-500 dark:text-gray-400 mb-3 font-bold">دليل مؤشر برامج الدوزان</p>
+                
+                <div class="flex flex-row-reverse justify-between items-center w-full">
+                    <!-- Physical Left Side (Flat) -->
+                    <div class="flex flex-col items-center text-blue-600 dark:text-blue-400 w-[38%]">
+                        <span class="text-[10px] text-gray-500 dark:text-gray-400 mb-1" dir="rtl">المؤشر يسار</span>
+                        <div class="flex items-center gap-1 mb-1">
+                            <span class="font-bold text-sm">أرخِ</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+                        </div>
+                        <span class="text-[9px] bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 rounded text-center">لتحريكه لليمين</span>
+                    </div>
+
+                    <!-- Center -->
+                    <div class="flex flex-col items-center w-[24%]">
+                        <div class="w-1 h-6 bg-green-500 rounded-full mb-1"></div>
+                        <span class="text-[10px] font-bold text-green-600 dark:text-green-400">مضبوط</span>
+                    </div>
+
+                    <!-- Physical Right Side (Sharp) -->
+                    <div class="flex flex-col items-center text-red-600 dark:text-red-400 w-[38%]">
+                        <span class="text-[10px] text-gray-500 dark:text-gray-400 mb-1" dir="rtl">المؤشر يمين</span>
+                        <div class="flex items-center gap-1 mb-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path></svg>
+                            <span class="font-bold text-sm">شــد</span>
+                        </div>
+                        <span class="text-[9px] bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded text-center">لتحريكه لليسار</span>
+                    </div>
+                </div>
+            </div>
+
+            <ul class="space-y-3">
+                <li class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-600">
+                    <span class="font-bold text-xl text-brown-700 dark:text-brown-400">F</span>
+                    <span class="text-gray-600 dark:text-gray-300 font-bold">فا</span>
+                </li>
+                <li class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-600">
+                    <span class="font-bold text-xl text-brown-700 dark:text-brown-400">A</span>
+                    <span class="text-gray-600 dark:text-gray-300 font-bold">لا</span>
+                </li>
+                <li class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-600">
+                    <span class="font-bold text-xl text-brown-700 dark:text-brown-400">D</span>
+                    <span class="text-gray-600 dark:text-gray-300 font-bold">ري</span>
+                </li>
+                <li class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-600">
+                    <span class="font-bold text-xl text-brown-700 dark:text-brown-400">G</span>
+                    <span class="text-gray-600 dark:text-gray-300 font-bold">صول</span>
+                </li>
+                <li class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-100 dark:border-gray-600">
+                    <span class="font-bold text-xl text-brown-700 dark:text-brown-400">C</span>
+                    <span class="text-gray-600 dark:text-gray-300 font-bold">دو</span>
+                </li>
+            </ul>
+            <div class="mt-6 text-center">
+                <button onclick="closeModals()" class="w-full px-5 py-2 bg-brown-600 hover:bg-brown-700 text-white rounded-lg font-bold shadow-md transition">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="fixed bottom-0 left-0 w-full bg-gray-100 dark:bg-gray-800 border-t border-gray-300 dark:border-gray-700 pt-4 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-10">
+        <div class="max-w-2xl mx-auto flex justify-center items-center relative">
+            <!-- Metronome Controls (Centered) -->
+            <div class="flex items-center gap-3 sm:gap-4">
+                <div class="flex items-center bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600 shadow-sm h-10">
+                    <button onclick="changeBpm(-1)" class="w-10 h-full flex justify-center items-center text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition font-bold text-xl" title="تقليل السرعة">-</button>
+                    <input type="number" id="bpm-input" value="120" min="40" max="250" class="w-16 h-full text-center bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold text-lg focus:outline-none" onchange="validateBpm(this)">
+                    <button onclick="changeBpm(1)" class="w-10 h-full flex justify-center items-center text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition font-bold text-xl" title="زيادة السرعة">+</button>
+                </div>
+                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider hidden sm:block mt-1">BPM</span>
+                <button id="metronome-btn" onclick="toggleMetronome()" class="w-10 h-10 rounded-full bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-brown-100 hover:text-brown-700 dark:hover:bg-brown-900/50 dark:hover:text-brown-400 border border-gray-200 dark:border-gray-600 flex items-center justify-center transition shadow-sm shrink-0" title="المترونوم">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </button>
+            </div>
+            
+            <div class="absolute left-0 text-xs font-bold text-gray-400 bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full">v4.0 (Auth Fixed)</div>
+        </div>
+    </footer>
+
+    <script type="module">
+        // --- State Management ---
+        let db = null;
+        let globalTimer = null;
+        
+        let lessons = [];
+        let currentLessonId = null;
+
+        const defaultV3Lesson = {
+            id: Date.now(),
+            name: "الدرس الأول",
+            steps: [
+                { id: 1, name: "احماء لليد ودوزان العود", desc: "تأكد من سلامة الجلسة ومسكة الريشة", duration: 0, isRunning: false, completed: false },
+                { id: 2, name: "تمرين الريشة الابتدائي", desc: "صد رد ٨ مرات على حميع الاوتار نزول ثم صعود", duration: 0, isRunning: false, completed: false },
+                { id: 3, name: "تمرين التوافق الحركي بين اليد اليمنى واليسرى", desc: "النزول: صد مطلق - رد ١ - صد ٢ - رد ٣ - صد ٤ - رد ٣ - صد ٢ رد ١ ثم الوتر التالي صد مطلق ، ...\nالصعود يكون بدون المطلق فقط رد ١ - صد ٢ - رد ٣ - صد ٤", duration: 0, isRunning: false, completed: false },
+                { id: 4, name: "تمرين الاصابع المتقدم", desc: "اصابع اليد اليسرى ١ - ٣ - ٢ - ٤\nصد رد على جميع الاوتار نزول ثم صعود", duration: 0, isRunning: false, completed: false }
+            ]
+        };
+
+        // --- SVGs ---
+        const svgs = {
+            play: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>`,
+            pause: `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>`,
+            check: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`,
+            undo: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>`,
+            edit: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>`,
+            copy: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>`,
+            up: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>`,
+            down: `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>`,
+            reset: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>`
+        };
+
+        // Make functions globally available for inline onclick handlers
+        window.openTuningModal = openTuningModal;
+        window.closeModals = closeModals;
+        window.openStepModal = openStepModal;
+        window.openLessonModal = openLessonModal;
+        window.saveStep = saveStep;
+        window.handleStepDelete = handleStepDelete;
+        window.saveLesson = saveLesson;
+        window.deleteCurrentLesson = deleteCurrentLesson;
+        window.openCopyModal = openCopyModal;
+        window.confirmCopyStep = confirmCopyStep;
+        window.moveStep = moveStep;
+        window.resetTimer = resetTimer;
+        window.toggleTimer = toggleTimer;
+        window.completeStep = completeStep;
+        window.uncompleteStep = uncompleteStep;
+        window.switchLesson = switchLesson;
+        window.toggleMetronome = toggleMetronome;
+        window.changeBpm = changeBpm;
+        window.validateBpm = validateBpm;
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'oud-tracker';
+        
+        // Dynamically use workspace config if present, otherwise use fallback
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyBizVS-hLBjRE_6lVjGASLW7oPgn-izADI",
+            authDomain: "learnoud-75c4b.firebaseapp.com",
+            projectId: "learnoud-75c4b",
+            storageBucket: "learnoud-75c4b.firebasestorage.app",
+            messagingSenderId: "75488374442",
+            appId: "1:75488374442:web:39ea03fd8c01e44f882ad3"
+        };
+        
+        let userId = null;
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        async function initFirebase() {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            const auth = getAuth(app);
+
+            try {
+                // VERY IMPORTANT: Check for workspace custom token to avoid permission denied errors
+                if (typeof __initial_auth_token !== 'undefined') {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                
+                if (!auth.currentUser) throw new Error("No user authenticated.");
+                userId = auth.currentUser.uid;
+                
+                await loadData();
+            } catch (error) {
+                console.error("Authentication failed:", error);
+                // Fallback to local defaults if auth fails
+                lessons = [ JSON.parse(JSON.stringify(defaultV3Lesson)) ];
+                currentLessonId = lessons[0].id;
+                renderApp();
+            }
+        }
+
+        async function loadData() {
+            if (!db || !userId) return;
+            
+            // Following strictly: doc(db, 'artifacts', appId, 'users', userId, collectionName, documentId)
+            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'appData', 'lessonsV3');
+            
+            try {
+                const snap = await getDoc(docRef);
+                if (snap.exists() && snap.data().lessons && snap.data().lessons.length > 0) {
+                    lessons = snap.data().lessons.map(l => ({
+                        ...l, 
+                        steps: l.steps.map(s => ({...s, isRunning: false}))
+                    }));
+                    currentLessonId = lessons[0].id;
+                } else {
+                    // Initialize with defaults if empty
+                    lessons = [ JSON.parse(JSON.stringify(defaultV3Lesson)) ];
+                    currentLessonId = lessons[0].id;
+                    await saveData(); // Await saving of defaults
+                }
+                renderApp();
+            } catch (error) {
+                console.error("Error loading data:", error);
+            }
+        }
+
+        async function saveData() {
+            if (!db || !userId) return;
+            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'appData', 'lessonsV3');
+            
+            try {
+                // Remove running state before saving to prevent stale timers on reload
+                const dataToSave = JSON.parse(JSON.stringify(lessons));
+                dataToSave.forEach(l => l.steps.forEach(s => s.isRunning = false));
+                await setDoc(docRef, { lessons: dataToSave });
+            } catch (error) {
+                console.error("Error saving data:", error);
+            }
+        }
+
+        // --- Core Rendering ---
+        function formatTime(totalSeconds) {
+            const m = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+            const s = (totalSeconds % 60).toString().padStart(2, '0');
+            return `${m}:${s}`;
+        }
+
+        function renderApp() {
+            renderLessonsNav();
+            renderSteps();
+            
+            const current = lessons.find(l => l.id === currentLessonId);
+            document.getElementById('current-lesson-title').textContent = current ? current.name : "الدرس";
+        }
+
+        function renderLessonsNav() {
+            const nav = document.getElementById('lessons-nav');
+            nav.innerHTML = '';
+            
+            lessons.forEach(l => {
+                const btn = document.createElement('button');
+                const isActive = l.id === currentLessonId;
+                btn.className = `whitespace-nowrap px-4 py-2 rounded-full font-bold text-sm transition-colors border ${isActive ? 'bg-brown-600 text-white border-brown-600' : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-brown-50 dark:hover:bg-gray-600'}`;
+                btn.textContent = l.name;
+                btn.onclick = () => switchLesson(l.id);
+                nav.appendChild(btn);
+            });
+
+            // Add new lesson button
+            const addBtn = document.createElement('button');
+            addBtn.className = "whitespace-nowrap px-4 py-2 rounded-full font-bold text-sm transition-colors border border-dashed border-gray-400 dark:border-gray-500 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700";
+            addBtn.textContent = "+ درس جديد";
+            addBtn.onclick = () => openLessonModal(false);
+            nav.appendChild(addBtn);
+        }
+
+        function renderSteps() {
+            const list = document.getElementById('steps-list');
+            list.innerHTML = '';
+            
+            const currentLesson = lessons.find(l => l.id === currentLessonId);
+            if (!currentLesson || !currentLesson.steps || currentLesson.steps.length === 0) {
+                list.innerHTML = '<div class="text-center text-gray-500 py-8">لا توجد تمارين في هذا الدرس. اضغط على (+) لإضافة تمرين جديد.</div>';
+                return;
+            }
+
+            currentLesson.steps.forEach((step, index) => {
+                const li = document.createElement('li');
+                const isRunning = step.isRunning;
+                const isDone = step.completed;
+
+                let cardStyle = "bg-white border-gray-100 dark:bg-gray-800 dark:border-gray-700";
+                if (isRunning) cardStyle = "bg-brown-50 border-brown-200 dark:bg-brown-900/30 dark:border-brown-700";
+                if (isDone) cardStyle = "bg-gray-50 border-transparent dark:bg-gray-800/50 opacity-60";
+
+                let titleStyle = isDone ? "line-through text-gray-400" : (isRunning ? "text-brown-700 dark:text-brown-400" : "text-gray-800 dark:text-gray-100");
+                let timeColor = isRunning ? "text-brown-600 dark:text-brown-400" : (isDone ? "text-gray-400" : "text-gray-700 dark:text-gray-300");
+
+                li.className = `flex flex-col p-4 rounded-xl border shadow-sm transition-colors ${cardStyle}`;
+                
+                li.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex-grow pl-3">
+                            <h4 class="font-bold text-lg ${titleStyle}">${index + 1}. ${step.name}</h4>
+                            ${step.desc ? `<p class="text-sm text-gray-500 mt-1 whitespace-pre-wrap">${step.desc}</p>` : ''}
+                        </div>
+                        
+                        <div class="flex items-center space-x-1 space-x-reverse bg-gray-50 dark:bg-gray-700/50 rounded-lg p-1 border border-gray-100 dark:border-gray-600 shrink-0">
+                            <button onclick="moveStep(${index}, -1)" class="p-1.5 text-gray-400 hover:text-brown-600 hover:bg-white dark:hover:bg-gray-600 rounded transition" title="أعلى">${svgs.up}</button>
+                            <button onclick="moveStep(${index}, 1)" class="p-1.5 text-gray-400 hover:text-brown-600 hover:bg-white dark:hover:bg-gray-600 rounded transition" title="أسفل">${svgs.down}</button>
+                            <div class="w-px h-4 bg-gray-300 dark:bg-gray-600 mx-0.5"></div>
+                            <button onclick="openCopyModal(${index})" class="p-1.5 text-gray-400 hover:text-brown-600 hover:bg-white dark:hover:bg-gray-600 rounded transition" title="نسخ إلى درس آخر">${svgs.copy}</button>
+                            <button onclick="openStepModal(${index})" class="p-1.5 text-gray-400 hover:text-brown-600 hover:bg-white dark:hover:bg-gray-600 rounded transition" title="تعديل">${svgs.edit}</button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100 dark:border-gray-700/50">
+                        <span id="timer-${index}" class="font-mono text-2xl font-bold ${timeColor}">
+                            ${formatTime(step.duration)}
+                        </span>
+                        
+                        <div class="flex space-x-2 space-x-reverse">
+                            ${!isDone ? `
+                                <button onclick="resetTimer(${index})" class="flex items-center justify-center w-10 h-10 bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 rounded-lg font-bold transition" title="تصفير العداد">
+                                    ${svgs.reset}
+                                </button>
+                                <button onclick="toggleTimer(${index})" class="flex items-center justify-center w-10 h-10 rounded-lg font-bold transition ${isRunning ? 'bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/50 dark:text-amber-400' : 'bg-brown-100 text-brown-700 hover:bg-brown-200 dark:bg-brown-900/50 dark:text-brown-400'}" title="${isRunning ? 'إيقاف مؤقت' : 'بدء التمرين'}">
+                                    ${isRunning ? svgs.pause : svgs.play}
+                                </button>
+                                <button onclick="completeStep(${index})" class="flex items-center justify-center w-10 h-10 bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/50 dark:text-green-400 rounded-lg font-bold transition" title="إنهاء التمرين">
+                                    ${svgs.check}
+                                </button>
+                            ` : `
+                                <button onclick="uncompleteStep(${index})" class="flex items-center justify-center w-10 h-10 bg-gray-200 text-gray-600 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 rounded-lg font-bold transition" title="تراجع">
+                                    ${svgs.undo}
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        // --- Lesson Interaction Logic ---
+        function switchLesson(id) {
+            // Stop any running timer in the current lesson
+            const current = lessons.find(l => l.id === currentLessonId);
+            if (current) current.steps.forEach(s => s.isRunning = false);
+            manageGlobalTimer();
+            
+            currentLessonId = id;
+            saveData();
+            renderApp();
+        }
+
+        let isEditingLesson = false;
+
+        function openLessonModal(isEdit = false) {
+            isEditingLesson = isEdit;
+            const modalTitle = document.getElementById('lesson-modal-title');
+            const nameInput = document.getElementById('lesson-name-input');
+            const delBtn = document.getElementById('lesson-delete-btn');
+
+            if (isEdit) {
+                const currentLesson = lessons.find(l => l.id === currentLessonId);
+                modalTitle.textContent = "تعديل الدرس";
+                nameInput.value = currentLesson ? currentLesson.name : "";
+                delBtn.classList.remove('hidden');
+            } else {
+                modalTitle.textContent = "إنشاء درس جديد";
+                nameInput.value = "";
+                delBtn.classList.add('hidden');
+            }
+
+            document.getElementById('lesson-modal').classList.remove('hidden');
+            setTimeout(() => nameInput.focus(), 100);
+        }
+
+        function saveLesson() {
+            const name = document.getElementById('lesson-name-input').value.trim();
+            if (!name) return;
+            
+            if (isEditingLesson) {
+                const currentLesson = lessons.find(l => l.id === currentLessonId);
+                if (currentLesson) currentLesson.name = name;
+            } else {
+                const newLesson = { id: Date.now(), name: name, steps: [] };
+                lessons.push(newLesson);
+                currentLessonId = newLesson.id;
+            }
+            
+            saveData();
+            renderApp();
+            closeModals();
+        }
+
+        function deleteCurrentLesson() {
+            if (lessons.length <= 1) {
+                showConfirm("تنبيه", "لا يمكنك حذف الدرس الوحيد المتبقي.", null);
+                document.getElementById('confirm-yes-btn').classList.add('hidden');
+                return;
+            }
+            
+            showConfirm("حذف الدرس", "هل أنت متأكد من حذف هذا الدرس وجميع تمارينه؟", () => {
+                lessons = lessons.filter(l => l.id !== currentLessonId);
+                currentLessonId = lessons[0].id;
+                saveData();
+                renderApp();
+            });
+        }
+
+        // --- Step Interaction Logic ---
+        function moveStep(index, direction) {
+            const currentLesson = lessons.find(l => l.id === currentLessonId);
+            const newIndex = index + direction;
+            if (newIndex >= 0 && newIndex < currentLesson.steps.length) {
+                [currentLesson.steps[index], currentLesson.steps[newIndex]] = [currentLesson.steps[newIndex], currentLesson.steps[index]];
+                saveData(); renderSteps();
+            }
+        }
+
+        function resetTimer(index) {
+            const currentLesson = lessons.find(l => l.id === currentLessonId);
+            if (currentLesson && currentLesson.steps[index]) {
+                currentLesson.steps[index].duration = 0;
+                currentLesson.steps[index].isRunning = false;
+                saveData(); renderSteps(); manageGlobalTimer();
+            }
+        }
+
+        function toggleTimer(index) {
+            const currentLesson = lessons.find(l => l.id === currentLessonId);
+            const step = currentLesson.steps[index];
+            if (step.isRunning) {
+                step.isRunning = false;
+            } else {
+                currentLesson.steps.forEach(s => s.isRunning = false);
+                step.isRunning = true;
+            }
+            saveData(); renderSteps(); manageGlobalTimer();
+        }
+
+        function completeStep(index) {
+            const currentLesson = lessons.find(l => l.id === currentLessonId);
+            currentLesson.steps[index].completed = true;
+            currentLesson.steps[index].isRunning = false;
+            saveData(); renderSteps(); manageGlobalTimer();
+        }
+
+        function uncompleteStep(index) {
+            const currentLesson = lessons.find(l => l.id === currentLessonId);
+            currentLesson.steps[index].completed = false;
+            saveData(); renderSteps();
+        }
+
+        function manageGlobalTimer() {
+            const currentLesson = lessons.find(l => l.id === currentLessonId);
+            const hasRunning = currentLesson && currentLesson.steps.some(s => s.isRunning);
+            
+            if (hasRunning && !globalTimer) {
+                globalTimer = setInterval(() => {
+                    const lsn = lessons.find(l => l.id === currentLessonId);
+                    if(!lsn) return;
+                    const activeIndex = lsn.steps.findIndex(s => s.isRunning);
+                    if (activeIndex !== -1) {
+                        lsn.steps[activeIndex].duration++;
+                        const el = document.getElementById(`timer-${activeIndex}`);
+                        if (el) el.textContent = formatTime(lsn.steps[activeIndex].duration);
+                        saveData();
+                    }
+                }, 1000);
+            } else if (!hasRunning && globalTimer) {
+                clearInterval(globalTimer);
+                globalTimer = null;
+            }
+            
+            manageWakeLock();
+        }
+
+        // --- Modals Logic ---
+        let currentEditStepIndex = -1;
+        let currentCopyStepIndex = -1;
+        let confirmCallback = null;
+
+        function openTuningModal() {
+            document.getElementById('tuning-modal').classList.remove('hidden');
+        }
+
+        function closeModals() {
+            document.querySelectorAll('div[id$="-modal"]').forEach(m => m.classList.add('hidden'));
+        }
+
+        // Custom Confirm
+        function showConfirm(title, msg, onYes) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-msg').textContent = msg;
+            
+            const yesBtn = document.getElementById('confirm-yes-btn');
+            if(onYes) {
+                yesBtn.classList.remove('hidden');
+                confirmCallback = onYes;
+            } else {
+                yesBtn.classList.add('hidden');
+            }
+            
+            yesBtn.onclick = () => {
+                if(confirmCallback) confirmCallback();
+                closeModals();
+            };
+            
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        // Edit Step
+        function openStepModal(index = -1) {
+            currentEditStepIndex = index;
+            const currentLesson = lessons.find(l => l.id === currentLessonId);
+            
+            document.getElementById('step-modal-title').textContent = index >= 0 ? "تعديل التمرين" : "إضافة تمرين جديد";
+            document.getElementById('step-name-input').value = index >= 0 ? currentLesson.steps[index].name : "";
+            document.getElementById('step-desc-input').value = index >= 0 ? (currentLesson.steps[index].desc || "") : "";
+            
+            if (index >= 0) {
+                document.getElementById('step-delete-btn').classList.remove('hidden');
+            } else {
+                document.getElementById('step-delete-btn').classList.add('hidden');
+            }
+            
+            document.getElementById('step-modal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('step-name-input').focus(), 100);
+        }
+
+        function saveStep() {
+            const name = document.getElementById('step-name-input').value.trim();
+            const desc = document.getElementById('step-desc-input').value.trim();
+            if (!name) return;
+            
+            const currentLesson = lessons.find(l => l.id === currentLessonId);
+            
+            if (currentEditStepIndex >= 0) {
+                currentLesson.steps[currentEditStepIndex].name = name;
+                currentLesson.steps[currentEditStepIndex].desc = desc;
+            } else {
+                currentLesson.steps.push({ id: Date.now(), name: name, desc: desc, duration: 0, isRunning: false, completed: false });
+            }
+            
+            saveData(); renderSteps(); closeModals();
+        }
+
+        function handleStepDelete() {
+            showConfirm("حذف التمرين", "هل أنت متأكد من حذف هذا التمرين؟", () => {
+                const currentLesson = lessons.find(l => l.id === currentLessonId);
+                currentLesson.steps.splice(currentEditStepIndex, 1);
+                saveData(); renderSteps(); manageGlobalTimer();
+            });
+        }
+
+        // Copy Step
+        function openCopyModal(index) {
+            currentCopyStepIndex = index;
+            const select = document.getElementById('copy-target-lesson');
+            select.innerHTML = '';
+            
+            let hasOtherLessons = false;
+            lessons.forEach(l => {
+                if(l.id !== currentLessonId) {
+                    hasOtherLessons = true;
+                    const opt = document.createElement('option');
+                    opt.value = l.id;
+                    opt.textContent = l.name;
+                    select.appendChild(opt);
+                }
+            });
+            
+            if(!hasOtherLessons) {
+                showConfirm("تنبيه", "لا يوجد دروس أخرى لنسخ التمرين إليها. قم بإنشاء درس جديد أولاً.", null);
+                return;
+            }
+            
+            document.getElementById('copy-modal').classList.remove('hidden');
+        }
+
+        function confirmCopyStep() {
+            const targetLessonId = Number(document.getElementById('copy-target-lesson').value);
+            const targetLesson = lessons.find(l => l.id === targetLessonId);
+            const currentLesson = lessons.find(l => l.id === currentLessonId);
+            
+            if(targetLesson && currentLesson && currentCopyStepIndex >= 0) {
+                const stepToCopy = { 
+                    ...currentLesson.steps[currentCopyStepIndex], 
+                    id: Date.now(), 
+                    isRunning: false, 
+                    completed: false, 
+                    duration: 0 
+                };
+                targetLesson.steps.push(stepToCopy);
+                saveData();
+                closeModals();
+                
+                // Show a brief success confirmation
+                showConfirm("نجاح", `تم نسخ التمرين إلى "${targetLesson.name}" بنجاح!`, null);
+            }
+        }
+
+        // --- Theme Logic ---
+        const themeBtn = document.getElementById('theme-toggle');
+        const darkIcon = document.getElementById('theme-icon-dark');
+        const lightIcon = document.getElementById('theme-icon-light');
+
+        function updateTheme(isDark) {
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+                darkIcon.classList.add('hidden');
+                lightIcon.classList.remove('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                lightIcon.classList.add('hidden');
+                darkIcon.classList.remove('hidden');
+            }
+        }
+
+        themeBtn.onclick = () => {
+            const isDark = !document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateTheme(isDark);
+        };
+
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            updateTheme(true);
+        } else {
+            updateTheme(false);
+        }
+
+        // --- Web Audio Metronome ---
+        let audioContext = null;
+        let isMetronomePlaying = false;
+        let currentBeatInBar = 0;
+        let nextNoteTime = 0.0;
+        let bpm = 120;
+        const beatsPerBar = 4; 
+        const lookahead = 25.0; 
+        const scheduleAheadTime = 0.1; 
+        let metronomeWorker = null; 
+
+        function initAudioContext() {
+            if (!audioContext) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioContext = new AudioContext();
+            }
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            
+            // iOS Audio Unlock Hack: Play a silent sound immediately to force hardware audio channel open
+            const buffer = audioContext.createBuffer(1, 1, 22050);
+            const node = audioContext.createBufferSource();
+            node.buffer = buffer;
+            node.connect(audioContext.destination);
+            if (node.start) {
+                node.start(0);
+            } else {
+                node.noteOn(0);
+            }
+        }
+
+        function initWorker() {
+            if (metronomeWorker) return;
+            const workerCode = `
+                let timerID = null;
+                self.onmessage = function(e) {
+                    if (e.data === "start") {
+                        timerID = setInterval(function() { postMessage("tick"); }, 25);
+                    } else if (e.data === "stop") {
+                        clearInterval(timerID);
+                        timerID = null;
+                    }
+                };
+            `;
+            try {
+                const blob = new Blob([workerCode], { type: "application/javascript" });
+                metronomeWorker = new Worker(URL.createObjectURL(blob));
+                metronomeWorker.onmessage = function(e) {
+                    if (e.data === "tick") {
+                        scheduler();
+                    }
+                };
+            } catch(e) {
+                console.warn("Worker creation failed, using main thread fallback", e);
+                // Fallback for strict iOS standalone modes that block blob URLs
+                metronomeWorker = {
+                    timer: null,
+                    postMessage: function(msg) {
+                        if (msg === 'start') this.timer = setInterval(() => scheduler(), 25);
+                        if (msg === 'stop') clearInterval(this.timer);
+                    }
+                };
+            }
+        }
+
+        function nextNote() {
+            const secondsPerBeat = 60.0 / bpm;
+            nextNoteTime += secondsPerBeat;
+            currentBeatInBar++;
+            if (currentBeatInBar === beatsPerBar) currentBeatInBar = 0;
+        }
+
+        function scheduleNote(beatNumber, time) {
+            const osc = audioContext.createOscillator();
+            const envelope = audioContext.createGain();
+            osc.connect(envelope);
+            envelope.connect(audioContext.destination);
+
+            if (beatNumber === 0) osc.frequency.value = 880.0;
+            else osc.frequency.value = 440.0;
+
+            envelope.gain.value = 1;
+            envelope.gain.exponentialRampToValueAtTime(1, time + 0.001);
+            envelope.gain.exponentialRampToValueAtTime(0.001, time + 0.02);
+
+            osc.start(time);
+            osc.stop(time + 0.03);
+        }
+
+        function scheduler() {
+            while (nextNoteTime < audioContext.currentTime + scheduleAheadTime ) {
+                scheduleNote(currentBeatInBar, nextNoteTime);
+                nextNote();
+            }
+        }
+
+        function toggleMetronome() {
+            const btn = document.getElementById('metronome-btn');
+            
+            // Force audio context unlock on every click to satisfy iOS requirements
+            initAudioContext();
+            initWorker();
+            
+            if (isMetronomePlaying) {
+                isMetronomePlaying = false;
+                if (metronomeWorker) metronomeWorker.postMessage("stop");
+                btn.classList.remove('bg-brown-600', 'text-white', 'hover:bg-brown-700');
+                btn.classList.add('bg-white', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+            } else {
+                isMetronomePlaying = true;
+                currentBeatInBar = 0;
+                nextNoteTime = audioContext.currentTime + 0.05;
+                metronomeWorker.postMessage("start");
+                btn.classList.remove('bg-white', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+                btn.classList.add('bg-brown-600', 'text-white', 'hover:bg-brown-700');
+            }
+            
+            manageWakeLock();
+        }
+
+        function validateBpm(input) {
+            let val = parseInt(input.value);
+            if (isNaN(val)) val = bpm;
+            if (val < 40) val = 40;
+            if (val > 250) val = 250;
+            input.value = val;
+            bpm = val;
+        }
+
+        function changeBpm(amount) {
+            const input = document.getElementById('bpm-input');
+            let val = parseInt(input.value) + amount;
+            if (val < 40) val = 40;
+            if (val > 250) val = 250;
+            input.value = val;
+            bpm = val;
+        }
+
+        // --- Wake Lock Management ---
+        let wakeLock = null;
+
+        async function manageWakeLock() {
+            let hasRunningTimer = false;
+            const currentLesson = lessons.find(l => l.id === currentLessonId);
+            if (currentLesson && currentLesson.steps.some(s => s.isRunning)) {
+                hasRunningTimer = true;
+            }
+            
+            const needsWakeLock = hasRunningTimer || isMetronomePlaying;
+            
+            if (needsWakeLock && document.visibilityState === 'visible') {
+                if (!wakeLock) {
+                    try {
+                        if ('wakeLock' in navigator) {
+                            wakeLock = await navigator.wakeLock.request('screen');
+                            wakeLock.addEventListener('release', () => {
+                                wakeLock = null;
+                            });
+                        }
+                    } catch (err) {
+                        console.warn('Wake Lock error:', err);
+                    }
+                }
+            } else {
+                if (wakeLock) {
+                    wakeLock.release().catch(() => {});
+                    wakeLock = null;
+                }
+            }
+        }
+
+        // Re-check wake lock if user switches apps and comes back
+        document.addEventListener('visibilitychange', manageWakeLock);
+
+        // Boot
+        initFirebase();
+
+    </script>
+</body>
+</html>
